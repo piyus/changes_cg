@@ -1,0 +1,15 @@
+diff -r phoenix-2.0/src/atomic.h phoenix/phoenix-2.0/src/atomic.h
+78d77
+< 	n = (unsigned int*)(((size_t)n << 16) >> 16);
+diff -r phoenix-2.0/tests/linear_regression/linear_regression.c phoenix/phoenix-2.0/tests/linear_regression/linear_regression.c
+256,258c256
+< 				size_t key = ((size_t)curr->key) & 0xFFFFFFFFFFFF;
+<         //switch ((intptr_t)curr->key)
+<         switch (key)
+---
+>         switch ((intptr_t)curr->key)
+diff -r phoenix-2.0/tests/string_match/string_match.c phoenix/phoenix-2.0/tests/string_match/string_match.c
+259c259
+<     fdata_keys = (char *)malloc (finfo_keys.st_size+1);
+---
+>     fdata_keys = (char *)malloc (finfo_keys.st_size);

@@ -1,0 +1,208 @@
+diff -r src/c-common.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/c-common.c
+5295,5296d5294
+< 	k1 &= 0xffffffffffffULL;
+< 	k2 &= 0xffffffffffffULL;
+diff -r src/cpp_symtab.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/cpp_symtab.c
+172,173c172
+<   else {
+< 		obstack_make_room(&table->stack, 224/*sizeof(tree)*/);
+---
+>   else
+176d174
+< 	}
+Only in src/: cscope.out
+diff -r src/dominance.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/dominance.c
+1340d1339
+< 		dom_i &= (1ULL << 48) - 1;
+diff -r src/ggc-page.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/ggc-page.c
+572d571
+< 	high_bits = high_bits & 0xffffffffffffULL;
+605d603
+< 	high_bits = high_bits & 0xffffffffffffULL;
+631d628
+< 	high_bits = high_bits & 0xffffffffffffULL;
+diff -r src/gimple.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/gimple.c
+148,150d147
+< 	if (size < sizeof(*stmt)) {
+< 		size = sizeof(*stmt);
+< 	}
+diff -r src/include/obstack.h ../../../../spec2/benchspec/CPU/502.gcc_r/src/include/obstack.h
+526,527c526,527
+<   (((h)->next_free				\
+<     > (h)->chunk_limit)				\
+---
+>   (((h)->next_free - (char *) (h)->chunk				\
+>     > (h)->chunk_limit - (char *) (h)->chunk)				\
+538c538
+<   ((  (char*)(obj) > (char*)(h)->chunk && (char*)(obj) < (h)->chunk_limit  )\
+---
+>   (((h)->temp > 0 && (h)->temp < (h)->chunk_limit - (char *) (h)->chunk)\
+540,541c540,541
+< 	    = (char*)(obj)  )				\
+<    : ((obstack_free) ((h), (char*)(obj)  ), 0)))
+---
+> 	    = (h)->temp + (char *) (h)->chunk)				\
+>    : ((obstack_free) ((h), (h)->temp + (char *) (h)->chunk), 0)))
+diff -r src/pointer-set.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/pointer-set.c
+55c55
+< hash1 (const void *_p, unsigned long max, unsigned long logmax)
+---
+> hash1 (const void *p, unsigned long max, unsigned long logmax)
+66,67d65
+< 	unsigned long p = (unsigned long)_p;
+< 	p &= ((1ULL<<48) - 1);
+diff -r src/reload1.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/reload1.c
+915,919c915
+< 	int _num = max_regno - LAST_VIRTUAL_REGISTER - 1;
+< 	if (_num == 0) {
+< 		_num = 1;
+< 	}
+<   temp_pseudo_reg_arr = XNEWVEC (int, _num);
+---
+>   temp_pseudo_reg_arr = XNEWVEC (int, max_regno - LAST_VIRTUAL_REGISTER - 1);
+1872c1868
+<   int nregs = (r < 0) ? 0 : hard_regno_nregs[r][PSEUDO_REGNO_MODE (reg)];
+---
+>   int nregs = hard_regno_nregs[r][PSEUDO_REGNO_MODE (reg)];
+diff -r src/rtl.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/rtl.c
+199,203c199
+< 	size_t sz = RTX_CODE_SIZE (code);
+< 	if (sz < sizeof(*rt)) {
+< 		sz = sizeof(*rt);
+< 	}
+<   rt = (rtx) ggc_alloc_zone_pass_stat (sz, &rtl_zone);
+---
+>   rt = (rtx) ggc_alloc_zone_pass_stat (RTX_CODE_SIZE (code), &rtl_zone);
+344,347c340
+<   unsigned int size = rtx_size (orig);
+< 	if (size < sizeof(struct rtx_def)) {
+< 		size = sizeof(struct rtx_def);
+< 	}
+---
+>   const unsigned int size = rtx_size (orig);
+diff -r src/sbitmap.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/sbitmap.c
+82,84d81
+< 	if (amt < sizeof(*bmap)) {
+< 		amt = sizeof(*bmap);
+< 	}
+diff -r src/sparseset.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/sparseset.c
+33,36d32
+< 	if (n_bytes < sizeof(struct sparseset_def)) {
+< 		n_bytes = sizeof(struct sparseset_def);
+< 	}
+< 
+Only in src/: tags
+diff -r src/tree.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/tree.c
+789,791d788
+< 	if (length < sizeof(*t)) {
+< 		length = sizeof(*t);
+< 	}
+961,963d957
+< 	if (length < sizeof(*t)) {
+< 		length = sizeof(*t);
+< 	}
+1473,1475d1466
+< 	if (length < sizeof(*s)) {
+< 		length = sizeof(*s);
+< 	}
+1593,1596d1583
+< 	if (length < sizeof(*t)) {
+< 		length += sizeof(*t);
+< 	}
+< 
+2115c2102
+<   node = (tree) ggc_alloc_zone_pass_stat (sizeof (*node), &tree_zone);
+---
+>   node = (tree) ggc_alloc_zone_pass_stat (sizeof (struct tree_list), &tree_zone);
+3617,3620d3603
+< 	if (length < sizeof(*t)) {
+< 		length = sizeof(*t);
+< 	}
+< 
+9428,9430d9410
+< 	if (length < sizeof(*t)) {
+< 		length = sizeof(*t);
+< 	}
+diff -r src/tree-ssa-operands.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/tree-ssa-operands.c
+129,132d128
+< typedef tree* tree_p;
+< DEF_VEC_P(tree_p);
+< DEF_VEC_ALLOC_P(tree_p,heap);
+< 
+134c130
+< static VEC(tree_p,heap) *build_defs;
+---
+> static VEC(tree,heap) *build_defs;
+137c133
+< static VEC(tree_p,heap) *build_uses;
+---
+> static VEC(tree,heap) *build_uses;
+228,229c224,225
+<       build_defs = VEC_alloc (tree_p, heap, 5);
+<       build_uses = VEC_alloc (tree_p, heap, 10);
+---
+>       build_defs = VEC_alloc (tree, heap, 5);
+>       build_uses = VEC_alloc (tree, heap, 10);
+254,255c250,251
+<       VEC_free (tree_p, heap, build_defs);
+<       VEC_free (tree_p, heap, build_uses);
+---
+>       VEC_free (tree, heap, build_defs);
+>       VEC_free (tree, heap, build_uses);
+420c416
+<   unsigned int num = VEC_length (tree_p, build_defs);
+---
+>   unsigned int num = VEC_length (tree, build_defs);
+434c430
+<       VEC_safe_insert (tree_p, heap, build_defs, 0, (tree_p)gimple_vdef_ptr (stmt));
+---
+>       VEC_safe_insert (tree, heap, build_defs, 0, (tree)gimple_vdef_ptr (stmt));
+464c460
+<       && (tree *) VEC_index (tree_p, build_defs, 0) == DEF_OP_PTR (old_ops))
+---
+>       && (tree *) VEC_index (tree, build_defs, 0) == DEF_OP_PTR (old_ops))
+476c472
+<     last = add_def_op ((tree *) VEC_index (tree_p, build_defs, new_i), last);
+---
+>     last = add_def_op ((tree *) VEC_index (tree, build_defs, new_i), last);
+503c499
+<       VEC_safe_insert (tree_p, heap, build_uses, 0, (tree_p)gimple_vuse_ptr (stmt));
+---
+>       VEC_safe_insert (tree, heap, build_uses, 0, (tree)gimple_vuse_ptr (stmt));
+535c531
+<   for (new_i = 0; new_i < VEC_length (tree_p, build_uses); new_i++)
+---
+>   for (new_i = 0; new_i < VEC_length (tree, build_uses); new_i++)
+537c533
+< 		       (tree *) VEC_index (tree_p, build_uses, new_i),
+---
+> 		       (tree *) VEC_index (tree, build_uses, new_i),
+553,554c549,550
+<   VEC_truncate (tree_p, build_defs, 0);
+<   VEC_truncate (tree_p, build_uses, 0);
+---
+>   VEC_truncate (tree, build_defs, 0);
+>   VEC_truncate (tree, build_uses, 0);
+574,575c570,571
+<   gcc_assert (VEC_length (tree_p, build_defs) == 0);
+<   gcc_assert (VEC_length (tree_p, build_uses) == 0);
+---
+>   gcc_assert (VEC_length (tree, build_defs) == 0);
+>   gcc_assert (VEC_length (tree, build_uses) == 0);
+586c582
+<   VEC_safe_push (tree_p, heap, build_defs, (tree_p) def_p);
+---
+>   VEC_safe_push (tree, heap, build_defs, (tree) def_p);
+595c591
+<   VEC_safe_push (tree_p, heap, build_uses, (tree_p) use_p);
+---
+>   VEC_safe_push (tree, heap, build_uses, (tree) use_p);
+diff -r src/tree-ssa-sccvn.c ../../../../spec2/benchspec/CPU/502.gcc_r/src/tree-ssa-sccvn.c
+1542,1543d1541
+< 	obstack_make_room(&current_info->nary_obstack, sizeof(*vno1));
+< 
+1582d1579
+< 	obstack_make_room(&current_info->nary_obstack, sizeof(*vno1));
+1612,1613d1608
+< 
+< 	obstack_make_room(&current_info->nary_obstack, sizeof(*vno1));

@@ -1,0 +1,5 @@
+diff -r httpd-2.4.46/server/mpm/event/event.c tars/httpd-2.4.46/server/mpm/event/event.c
+253c253
+< APR_RING_HEAD1(timeout_head_t, event_conn_state_t);
+---
+> APR_RING_HEAD(timeout_head_t, event_conn_state_t);

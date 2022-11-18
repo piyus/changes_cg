@@ -1,0 +1,23 @@
+diff -r ../apr-1.7.0/include/apr.h.in srclib/apr/include/apr.h.in
+264c264
+< #define APR_HAVE_IPV6           @have_ipv6@
+---
+> #define APR_HAVE_IPV6           0
+285c285
+< #define APR_HAS_SHARED_MEMORY     @sharedmem@
+---
+> #define APR_HAS_SHARED_MEMORY     0
+288c288
+< #define APR_HAS_MMAP              @mmap@
+---
+> #define APR_HAS_MMAP              0
+diff -r ../apr-1.7.0/include/apr_ring.h srclib/apr/include/apr_ring.h
+96a97,104
+> 
+> #define APR_RING_HEAD1(head, elem)					\
+>     struct head {							\
+> 	struct elem * volatile next;					\
+> 	struct elem * volatile prev;					\
+> 	char unused[sizeof(struct elem)-16];                   \
+>     }
+> 
