@@ -1,132 +1,240 @@
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/av.c isos/native/benchspec/CPU/500.perlbench_r/src/av.c
-151c151
-< #if 1 //def STRESS_REALLOC
----
-> #ifdef STRESS_REALLOC
-154,155c154
-< 		    Newx(*allocp, newmax+2, SV*);
-< 				*allocp = *allocp + 1;
----
-> 		    Newx(*allocp, newmax+1, SV*);
-183,184c182
-< 		Newx(*allocp, newmax+2, SV*);
-< 		*allocp = *allocp + 1;
----
-> 		Newx(*allocp, newmax+1, SV*);
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c isos/native/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c
-193,195d192
-< 	int (*unused1)(SV* sv, MAGIC* mg);
-< 	int (*unused2)(SV* sv, MAGIC* mg);
-< 	int (*unused3)(SV* sv, MAGIC* mg);
-197c194
-< 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
----
-> 	NULL, NULL, NULL, NULL, NULL
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/embed.h isos/native/benchspec/CPU/500.perlbench_r/src/embed.h
-984,985c984
-< #define nextchar(a)		S_nextchar(aTHX_ a, 1)
-< #define nextchar1(a)		S_nextchar(aTHX_ a, 0)
----
-> #define nextchar(a)		S_nextchar(aTHX_ a)
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/gv.c isos/native/benchspec/CPU/500.perlbench_r/src/gv.c
-592c592
-< 		   oldsavestack_ix, gv,
----
-> 		   oldsavestack_ix, (OP *)gv,
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/hv.h isos/native/benchspec/CPU/500.perlbench_r/src/hv.h
-48c48
-<     char	hek_key[];	/* variable-length hash key */
----
->     char	hek_key[1];	/* variable-length hash key */
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/op.c isos/native/benchspec/CPU/500.perlbench_r/src/op.c
-8401c8401
-< Perl_newATTRSUB_x(pTHX_ I32 floor, GV *_o, OP *proto, OP *attrs,
----
-> Perl_newATTRSUB_x(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs,
-8404d8403
-< 		OP *o = (OP*)_o;
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/pad.c isos/native/benchspec/CPU/500.perlbench_r/src/pad.c
-2799,2802d2798
-< 		size_t size = STRUCT_OFFSET(struct padname_with_str, xpadn_str[0]) + len + 1;
-< 		if (size < sizeof(struct padname_with_str)) {
-< 			size = sizeof(struct padname_with_str);
-< 		}
-2804c2800
-< 	  size,
----
-> 	  STRUCT_OFFSET(struct padname_with_str, xpadn_str[0]) + len + 1,
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/pp_hot.c isos/native/benchspec/CPU/500.perlbench_r/src/pp_hot.c
-3175c3175
-<                 Renew(ary, items+1, SV*);
----
->                 Renew(ary, items, SV*);
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/pp_pack.c isos/native/benchspec/CPU/500.perlbench_r/src/pp_pack.c
-3038c3038
-< 		unsigned long long aptr;
----
-> 		const char *aptr;
-3042c3042
-< 		if (!SvOK(fromstr)) aptr = 0;
----
-> 		if (!SvOK(fromstr)) aptr = NULL;
-3055c3055
-< 			aptr = (unsigned long long)SvPV_nomg_const_nolen(fromstr);
----
-> 			aptr = SvPV_nomg_const_nolen(fromstr);
-3057c3057
-< 			aptr = (unsigned long long)SvPV_force_flags_nolen(fromstr, 0);
----
-> 			aptr = SvPV_force_flags_nolen(fromstr, 0);
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/proto.h isos/native/benchspec/CPU/500.perlbench_r/src/proto.h
-2847c2847
-< PERL_CALLCONV CV*	Perl_newATTRSUB_x(pTHX_ I32 floor, GV *o, OP *proto, OP *attrs, OP *block, bool o_is_gv);
----
-> PERL_CALLCONV CV*	Perl_newATTRSUB_x(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block, bool o_is_gv);
-7012c7012
-< STATIC char *	S_nextchar(pTHX_ RExC_state_t *pRExC_state, int inc)
----
-> STATIC char *	S_nextchar(pTHX_ RExC_state_t *pRExC_state)
-7565c7565
-< STATIC char *	S_F0convert(NV nv, char *const endbuf, STRLEN *const len, size_t sz)
----
-> STATIC char *	S_F0convert(NV nv, char *const endbuf, STRLEN *const len)
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/regcomp.c isos/native/benchspec/CPU/500.perlbench_r/src/regcomp.c
-10732,10733c10732,10733
-<     //RExC_parse--;
-<     nextchar1(pRExC_state);
----
->     RExC_parse--;
->     nextchar(pRExC_state);
-13779,13782d13778
-< 								if (stacked_ptr == NULL) {
-<                   vFAIL2("Unexpected binary operator '%c' with no "
-<                          "preceding operand", curchar);
-< 								}
-16278c16274
-< S_nextchar(pTHX_ RExC_state_t *pRExC_state, int inc)
----
-> S_nextchar(pTHX_ RExC_state_t *pRExC_state)
-16280c16276
-<     char* const retval = (inc) ? RExC_parse++ : RExC_parse;
----
->     char* const retval = RExC_parse++;
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/regexp.h isos/native/benchspec/CPU/500.perlbench_r/src/regexp.h
-474c474
-< #define RX_MATCH_COPIED_set(prog,t)	(((void*)(t) != NULL) \
----
-> #define RX_MATCH_COPIED_set(prog,t)	((t) \
-diff -r isos/spec/benchspec/CPU/500.perlbench_r/src/sv.c isos/native/benchspec/CPU/500.perlbench_r/src/sv.c
-10799c10799
-< S_F0convert(NV nv, char *const buf, STRLEN *const len, size_t sz)
----
-> S_F0convert(NV nv, char *const endbuf, STRLEN *const len)
-10801d10800
-< 	char *endbuf = buf + sz;
-11306c11305
-<                     if ((p = F0convert(nv, ebuf, &l, sizeof ebuf))) {
----
->                     if ((p = F0convert(nv, ebuf + sizeof ebuf, &l))) {
-12299c12298
-< 		    if ((eptr = F0convert(nv, ebuf, &elen, sizeof ebuf)))
----
-> 		    if ((eptr = F0convert(nv, ebuf + sizeof ebuf, &elen)))
+diff -ur native/benchspec/CPU/500.perlbench_r/src/av.c spec/benchspec/CPU/500.perlbench_r/src/av.c
+--- native/benchspec/CPU/500.perlbench_r/src/av.c	2016-01-06 23:40:29.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/av.c	2021-04-17 18:25:03.938497431 +0530
+@@ -148,10 +148,11 @@
+                      * bytes to spare! */
+ 		    MEM_WRAP_CHECK_1(newmax, SV*, oom_array_extend);
+ 		}
+-#ifdef STRESS_REALLOC
++#if 1 //def STRESS_REALLOC
+ 		{
+ 		    SV ** const old_alloc = *allocp;
+-		    Newx(*allocp, newmax+1, SV*);
++		    Newx(*allocp, newmax+2, SV*);
++				*allocp = *allocp + 1;
+ 		    Copy(old_alloc, *allocp, *maxp + 1, SV*);
+ 		    Safefree(old_alloc);
+ 		}
+@@ -179,7 +180,8 @@
+                     /* see comment above about newmax+1*/
+ 		    MEM_WRAP_CHECK_1(newmax, SV*, oom_array_extend);
+ 		}
+-		Newx(*allocp, newmax+1, SV*);
++		Newx(*allocp, newmax+2, SV*);
++		*allocp = *allocp + 1;
+ 		ary = *allocp + 1;
+ 		tmp = newmax;
+ 		*allocp[0] = NULL;	/* For the stacks */
+diff -ur native/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c spec/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c
+--- native/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c	2015-09-22 00:27:41.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/cpan/Digest-MD5/MD5.c	2021-08-06 08:55:20.594435398 +0530
+@@ -190,8 +190,11 @@
+ 	U32 (*svt_len)(SV* sv, MAGIC* mg);
+ 	int (*svt_clear)(SV* sv, MAGIC* mg);
+ 	int (*svt_free)(SV* sv, MAGIC* mg);
++	int (*unused1)(SV* sv, MAGIC* mg);
++	int (*unused2)(SV* sv, MAGIC* mg);
++	int (*unused3)(SV* sv, MAGIC* mg);
+ } vtbl_md5 = {
+-	NULL, NULL, NULL, NULL, NULL
++	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+ };
+ #endif
+ 
+diff -ur native/benchspec/CPU/500.perlbench_r/src/embed.h spec/benchspec/CPU/500.perlbench_r/src/embed.h
+--- native/benchspec/CPU/500.perlbench_r/src/embed.h	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/embed.h	2020-10-16 19:58:30.871315708 +0530
+@@ -981,7 +981,8 @@
+ #define is_ssc_worth_it		S_is_ssc_worth_it
+ #define join_exact(a,b,c,d,e,f,g)	S_join_exact(aTHX_ a,b,c,d,e,f,g)
+ #define make_trie(a,b,c,d,e,f,g,h)	S_make_trie(aTHX_ a,b,c,d,e,f,g,h)
+-#define nextchar(a)		S_nextchar(aTHX_ a)
++#define nextchar(a)		S_nextchar(aTHX_ a, 1)
++#define nextchar1(a)		S_nextchar(aTHX_ a, 0)
+ #define parse_lparen_question_flags(a)	S_parse_lparen_question_flags(aTHX_ a)
+ #define populate_ANYOF_from_invlist(a,b)	S_populate_ANYOF_from_invlist(aTHX_ a,b)
+ #define reg(a,b,c,d)		S_reg(aTHX_ a,b,c,d)
+diff -ur native/benchspec/CPU/500.perlbench_r/src/gv.c spec/benchspec/CPU/500.perlbench_r/src/gv.c
+--- native/benchspec/CPU/500.perlbench_r/src/gv.c	2016-01-06 23:40:29.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/gv.c	2021-04-17 16:13:01.606921997 +0530
+@@ -589,7 +589,7 @@
+         /* newATTRSUB will free the CV and return NULL if we're still
+            compiling after a syntax error */
+ 	if ((cv = newATTRSUB_x(
+-		   oldsavestack_ix, (OP *)gv,
++		   oldsavestack_ix, gv,
+ 	           NULL,NULL,
+ 	           coresub_op(
+ 	             opnum
+diff -ur native/benchspec/CPU/500.perlbench_r/src/hv.h spec/benchspec/CPU/500.perlbench_r/src/hv.h
+--- native/benchspec/CPU/500.perlbench_r/src/hv.h	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/hv.h	2021-08-06 08:54:45.518307274 +0530
+@@ -45,7 +45,7 @@
+ struct hek {
+     U32		hek_hash;	/* hash of key */
+     I32		hek_len;	/* length of hash key */
+-    char	hek_key[1];	/* variable-length hash key */
++    char	hek_key[];	/* variable-length hash key */
+     /* the hash-key is \0-terminated */
+     /* after the \0 there is a byte for flags, such as whether the key
+        is UTF-8 */
+diff -ur native/benchspec/CPU/500.perlbench_r/src/op.c spec/benchspec/CPU/500.perlbench_r/src/op.c
+--- native/benchspec/CPU/500.perlbench_r/src/op.c	2015-09-22 00:27:41.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/op.c	2021-08-06 08:54:54.494340032 +0530
+@@ -8398,9 +8398,10 @@
+ 
+ /* _x = extended */
+ CV *
+-Perl_newATTRSUB_x(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs,
++Perl_newATTRSUB_x(pTHX_ I32 floor, GV *_o, OP *proto, OP *attrs,
+ 			    OP *block, bool o_is_gv)
+ {
++		OP *o = (OP*)_o;
+     GV *gv;
+     const char *ps;
+     STRLEN ps_len = 0; /* init it to avoid false uninit warning from icc */
+diff -ur native/benchspec/CPU/500.perlbench_r/src/pad.c spec/benchspec/CPU/500.perlbench_r/src/pad.c
+--- native/benchspec/CPU/500.perlbench_r/src/pad.c	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/pad.c	2021-08-06 08:54:58.566354906 +0530
+@@ -2796,8 +2796,12 @@
+     char *alloc2; /* for Newxz */
+     PADNAME *pn;
+     PERL_ARGS_ASSERT_NEWPADNAMEPVN;
++		size_t size = STRUCT_OFFSET(struct padname_with_str, xpadn_str[0]) + len + 1;
++		if (size < sizeof(struct padname_with_str)) {
++			size = sizeof(struct padname_with_str);
++		}
+     Newxz(alloc2,
+-	  STRUCT_OFFSET(struct padname_with_str, xpadn_str[0]) + len + 1,
++	  size,
+ 	  char);
+     alloc = (struct padname_with_str *)alloc2;
+     pn = (PADNAME *)alloc;
+diff -ur native/benchspec/CPU/500.perlbench_r/src/perly.c spec/benchspec/CPU/500.perlbench_r/src/perly.c
+--- native/benchspec/CPU/500.perlbench_r/src/perly.c	2016-01-06 23:40:29.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/perly.c	2021-04-22 07:24:56.837078280 +0530
+@@ -405,7 +405,12 @@
+       users should not rely upon it.  Assigning to YYVAL
+       unconditionally makes the parser a bit smaller, and it avoids a
+       GCC warning that YYVAL may be used uninitialized.  */
+-    yyval = ps[1-parser->yylen].val;
++		if (parser->yylen) {
++    	yyval = ps[1-parser->yylen].val;
++		}
++		else {
++    	yyval.ival = ps[1-parser->yylen].val.ival;
++		}
+ 
+     YY_STACK_PRINT(parser);
+     YY_REDUCE_PRINT (yyn);
+diff -ur native/benchspec/CPU/500.perlbench_r/src/pp_hot.c spec/benchspec/CPU/500.perlbench_r/src/pp_hot.c
+--- native/benchspec/CPU/500.perlbench_r/src/pp_hot.c	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/pp_hot.c	2021-02-07 20:14:05.774765964 +0530
+@@ -3172,7 +3172,7 @@
+ 	    if (UNLIKELY(items - 1 > AvMAX(av))) {
+                 SV **ary = AvALLOC(av);
+                 AvMAX(av) = items - 1;
+-                Renew(ary, items, SV*);
++                Renew(ary, items+1, SV*);
+                 AvALLOC(av) = ary;
+                 AvARRAY(av) = ary;
+             }
+diff -ur native/benchspec/CPU/500.perlbench_r/src/pp_pack.c spec/benchspec/CPU/500.perlbench_r/src/pp_pack.c
+--- native/benchspec/CPU/500.perlbench_r/src/pp_pack.c	2016-01-06 23:40:29.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/pp_pack.c	2020-09-06 12:40:52.709601735 +0530
+@@ -3035,11 +3035,11 @@
+ 	    /* FALLTHROUGH */
+ 	case 'p':
+ 	    while (len-- > 0) {
+-		const char *aptr;
++		unsigned long long aptr;
+ 
+ 		fromstr = NEXTFROM;
+ 		SvGETMAGIC(fromstr);
+-		if (!SvOK(fromstr)) aptr = NULL;
++		if (!SvOK(fromstr)) aptr = 0;
+ 		else {
+ 		    /* XXX better yet, could spirit away the string to
+ 		     * a safe spot and hang on to it until the result
+@@ -3052,9 +3052,9 @@
+ 				       "Attempt to pack pointer to temporary value");
+ 		    }
+ 		    if (SvPOK(fromstr) || SvNIOK(fromstr))
+-			aptr = SvPV_nomg_const_nolen(fromstr);
++			aptr = (unsigned long long)SvPV_nomg_const_nolen(fromstr);
+ 		    else
+-			aptr = SvPV_force_flags_nolen(fromstr, 0);
++			aptr = (unsigned long long)SvPV_force_flags_nolen(fromstr, 0);
+ 		}
+                 PUSH_VAR(utf8, cur, aptr, needs_swap);
+ 	    }
+diff -ur native/benchspec/CPU/500.perlbench_r/src/proto.h spec/benchspec/CPU/500.perlbench_r/src/proto.h
+--- native/benchspec/CPU/500.perlbench_r/src/proto.h	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/proto.h	2021-08-06 09:02:14.160043491 +0530
+@@ -2844,7 +2844,7 @@
+ 			__attribute__warn_unused_result__;
+ 
+ /* PERL_CALLCONV CV*	newATTRSUB(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block); */
+-PERL_CALLCONV CV*	Perl_newATTRSUB_x(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block, bool o_is_gv);
++PERL_CALLCONV CV*	Perl_newATTRSUB_x(pTHX_ I32 floor, GV *o, OP *proto, OP *attrs, OP *block, bool o_is_gv);
+ /* PERL_CALLCONV AV*	Perl_newAV(pTHX)
+ 			__attribute__warn_unused_result__; */
+ 
+@@ -7009,7 +7009,7 @@
+ #define PERL_ARGS_ASSERT_MAKE_TRIE	\
+ 	assert(pRExC_state); assert(startbranch); assert(first); assert(last); assert(tail)
+ 
+-STATIC char *	S_nextchar(pTHX_ RExC_state_t *pRExC_state)
++STATIC char *	S_nextchar(pTHX_ RExC_state_t *pRExC_state, int inc)
+ 			__attribute__nonnull__(pTHX_1);
+ #define PERL_ARGS_ASSERT_NEXTCHAR	\
+ 	assert(pRExC_state)
+diff -ur native/benchspec/CPU/500.perlbench_r/src/regcomp.c spec/benchspec/CPU/500.perlbench_r/src/regcomp.c
+--- native/benchspec/CPU/500.perlbench_r/src/regcomp.c	2016-01-06 23:40:29.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/regcomp.c	2021-04-17 16:43:37.947400652 +0530
+@@ -10729,8 +10729,8 @@
+ 
+     *flagp = WORST;			/* Tentatively. */
+ 
+-    RExC_parse--;
+-    nextchar(pRExC_state);
++    //RExC_parse--;
++    nextchar1(pRExC_state);
+     while (RExC_parse < RExC_end && *RExC_parse != '|' && *RExC_parse != ')') {
+ 	flags &= ~TRYAGAIN;
+         latest = regpiece(pRExC_state, &flags,depth+1);
+@@ -13776,6 +13776,10 @@
+                     vFAIL2("Unexpected binary operator '%c' with no "
+                            "preceding operand", curchar);
+                 }
++								if (stacked_ptr == NULL) {
++                  vFAIL2("Unexpected binary operator '%c' with no "
++                         "preceding operand", curchar);
++								}
+                 stacked_operator = (char) SvUV(*stacked_ptr);
+ 
+                 if (regex_set_precedence(curchar)
+@@ -16271,9 +16275,9 @@
+ */
+ 
+ STATIC char*
+-S_nextchar(pTHX_ RExC_state_t *pRExC_state)
++S_nextchar(pTHX_ RExC_state_t *pRExC_state, int inc)
+ {
+-    char* const retval = RExC_parse++;
++    char* const retval = (inc) ? RExC_parse++ : RExC_parse;
+ 
+     PERL_ARGS_ASSERT_NEXTCHAR;
+ 
+diff -ur native/benchspec/CPU/500.perlbench_r/src/regexp.h spec/benchspec/CPU/500.perlbench_r/src/regexp.h
+--- native/benchspec/CPU/500.perlbench_r/src/regexp.h	2015-06-20 01:38:51.000000000 +0530
++++ spec/benchspec/CPU/500.perlbench_r/src/regexp.h	2020-07-22 09:46:36.172721133 +0530
+@@ -471,7 +471,7 @@
+ #define RX_MATCH_COPIED_on(prog)	(RX_EXTFLAGS(prog) |= RXf_COPY_DONE)
+ #define RXp_MATCH_COPIED_off(prog)	(RXp_EXTFLAGS(prog) &= ~RXf_COPY_DONE)
+ #define RX_MATCH_COPIED_off(prog)	(RX_EXTFLAGS(prog) &= ~RXf_COPY_DONE)
+-#define RX_MATCH_COPIED_set(prog,t)	((t) \
++#define RX_MATCH_COPIED_set(prog,t)	(((void*)(t) != NULL) \
+ 					 ? RX_MATCH_COPIED_on(prog) \
+ 					 : RX_MATCH_COPIED_off(prog))
+ 
