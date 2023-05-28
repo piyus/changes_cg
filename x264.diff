@@ -1,11 +1,23 @@
-diff -r native/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h spec/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h
-879c879,880
-< static const signed char INIT_FLD_MAP_I[1][8][15][2] =
----
-> static const signed char INIT_FLD_MAP_I[1][22][15][2] =
-> //static const signed char INIT_FLD_MAP_I[1][8][15][2] =
-935c936,937
-< static const signed char INIT_FLD_LAST_I[1][8][15][2] =
----
-> static const signed char INIT_FLD_LAST_I[1][22][15][2] =
-> //static const signed char INIT_FLD_LAST_I[1][8][15][2] =
+diff -ur native/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h spec/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h
+--- native/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h	2023-05-28 13:08:20.937995469 +0530
++++ spec/benchspec/CPU/525.x264_r/src/ldecod_src/inc/ctx_tables.h	2021-04-15 15:10:18.705424735 +0530
+@@ -876,7 +876,8 @@
+ 
+ 
+ #if ENABLE_FIELD_CTX
+-static const signed char INIT_FLD_MAP_I[1][8][15][2] =
++static const signed char INIT_FLD_MAP_I[1][22][15][2] =
++//static const signed char INIT_FLD_MAP_I[1][8][15][2] =
+ {
+   //----- model 0 -----
+   {
+@@ -932,7 +933,8 @@
+   }
+ };
+ 
+-static const signed char INIT_FLD_LAST_I[1][8][15][2] =
++static const signed char INIT_FLD_LAST_I[1][22][15][2] =
++//static const signed char INIT_FLD_LAST_I[1][8][15][2] =
+ {
+   //----- model 0 -----
+   {
